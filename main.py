@@ -9,6 +9,7 @@ from langchain.agents import  create_tool_calling_agent
 from langchain.agents import AgentExecutor
 from tools import search_tool, save_tool
 
+
 load_dotenv()
 
 class ResearchResponse (BaseModel) :
@@ -36,7 +37,7 @@ prompt = ChatPromptTemplate.from_messages(
              """
             
         ),
-        ("placeholder", "{chat_history}"),
+        # ("placeholder", "{chat_history}"),
         ("human", "{query}"),
         ("placeholder", "{agent_scratchpad}"),
     ]
@@ -51,10 +52,10 @@ agent =  create_tool_calling_agent(
 
 agent_executor = AgentExecutor(agent = agent, tools = tools, verbose = True)
 
-query = input("What can I help you with? \n")
-raw_response = agent_executor.invoke({"query": query})
-text_part = raw_response["output"].split("```json")[0].strip()
-print(text_part)
+# query = input("What can I help you with? \n")
+# raw_response = agent_executor.invoke({"query": query})
+# text_part = raw_response["output"].split("```json")[0].strip()
+# print(text_part)
 
 # try:
 #     structured_response = parser.parse(raw_response.get("output")[0]["text"])
