@@ -34,3 +34,4 @@ if prompt := st.chat_input("Type your query here..."):
 
         message_placeholder.markdown(ai_text)
         st.session_state.messages.append({"role": "assistant", "content": ai_text})
+st.write("Ready to chat — type your question below 👇")
