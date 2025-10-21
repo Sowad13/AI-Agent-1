@@ -30,7 +30,7 @@ if prompt := st.chat_input("Type your query here..."):
             response = agent_executor.invoke({"query": prompt})
             ai_text = response.get("output", "No response generated.")
         except Exception as e:
-            ai_text = f"⚠️ Error: {str(e)}"
+            ai_text = f"Error: {str(e)}"
 
         message_placeholder.markdown(ai_text)
         st.session_state.messages.append({"role": "assistant", "content": ai_text})
