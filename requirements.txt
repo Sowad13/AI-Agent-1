@@ -7,3 +7,11 @@ python-dotenv
 pydantic
 langchain_google_genai
 duckduckgo-search
+streamlit
+langchain==0.2.14
+langchain-core==0.2.24
+langchain-google-genai==1.0.7
+langchain-community==0.2.11
+pydantic==2.8.2
+streamlit==1.38.0
+python-dotenv==1.0.1
