@@ -1,71 +1,66 @@
-import gradio as gr
 from dotenv import load_dotenv
 from pydantic import BaseModel
+# from langchain_openai import ChatOpenAI
+# from langchain_anthropic import ChatAnthropic
 from langchain_google_genai import ChatGoogleGenerativeAI
 from langchain_core.prompts import ChatPromptTemplate
 from langchain_core.output_parsers import PydanticOutputParser
-from langchain.agents import create_react_agent, AgentExecutor
+from langchain.agents import  create_tool_calling_agent
+from langchain.agents import AgentExecutor
 from tools import search_tool, save_tool
 
 load_dotenv()
 
-# Define output model
-class ResearchResponse(BaseModel):
+class ResearchResponse (BaseModel) :
     topic: str
     summary: str
     sources: list[str]
     tools_used: list[str]
 
-# LLM setup
-llm = ChatGoogleGenerativeAI(model="gemini-2.5-flash")
 
-# Parser setup
-parser = PydanticOutputParser(pydantic_object=ResearchResponse)
+# llm1 = ChatOpenAI( model = "gpt-4o-mini")
+# llm2 = ChatAnthropic( model = "claude-3-5-sonnet-20241022") 
 
-# Prompt setup
+llm = ChatGoogleGenerativeAI ( model = "gemini-2.5-flash")
+
+parser = PydanticOutputParser (pydantic_object = ResearchResponse)
+
 prompt = ChatPromptTemplate.from_messages(
     [
         (
             "system",
             """
-            You are a research assistant that will help generate a research paper.
-            Answer the user query and use necessary tools.
-            Wrap the output in this format and provide no other text\n{format_instructions}
-            """
+             You are a research assistant that will help generate a research paper.
+             Answer the user query  and use necessary tools.
+             Wrap the output in this format and provide no other text\n{format_instructions}
+             """
+            
         ),
         ("placeholder", "{chat_history}"),
         ("human", "{query}"),
         ("placeholder", "{agent_scratchpad}"),
     ]
-).partial(format_instructions=parser.get_format_instructions())
+).partial(format_instructions = parser.get_format_instructions())
 
-# Tools and agent setup
 tools = [search_tool, save_tool]
-agent = create_react_agent(
-    llm=llm,
-    prompt=prompt,
-    tools=tools
+agent =  create_tool_calling_agent(
+    llm = llm,
+    prompt = prompt,
+    tools = tools
 )
 
-agent_executor = AgentExecutor(agent=agent, tools=tools, verbose=False)
+agent_executor = AgentExecutor(agent = agent, tools = tools, verbose = True)
 
-# Function to handle chat
-def chat(query):
-    raw_response = agent_executor.invoke({"query": query})
-    text_part = raw_response["output"].split("```json")[0].strip()
-    return text_part
+query = input("What can I help you with? \n")
+raw_response = agent_executor.invoke({"query": query})
+text_part = raw_response["output"].split("```json")[0].strip()
+print(text_part)
 
-# Gradio UI
-with gr.Blocks() as demo:
-    chatbot = gr.Chatbot()
-    user_input = gr.Textbox(label="Your Query")
-    submit_btn = gr.Button("Send")
+# try:
+#     structured_response = parser.parse(raw_response.get("output")[0]["text"])
+#     print(structured_response.topic)
+# except Exception as e:
+#     print("Error parsing response.", e, "Raw Response -", raw_response)
 
-    def respond(user_message, chat_history):
-        reply = chat(user_message)
-        chat_history.append((user_message, reply))
-        return "", chat_history
 
-    submit_btn.click(respond, inputs=[user_input, chatbot], outputs=[user_input, chatbot])
-
-demo.launch()
+# print(structured_response.topic)
