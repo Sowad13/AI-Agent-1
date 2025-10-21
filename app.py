@@ -1,10 +1,11 @@
 import streamlit as st
 from main import agent_executor
+import json
 
 # --- Page setup ---
 st.set_page_config(page_title="AI Research Assistant", page_icon="🤖", layout="centered")
 
-st.title("🤖 AI Research Assistant")
+st.title("AI Research Assistant")
 st.write("Ask me anything! I’ll search, summarize, and give you structured research answers.")
 
 # --- Initialize chat history ---
@@ -33,4 +34,5 @@ if prompt := st.chat_input("Type your query here..."):
             ai_text = f"Error: {str(e)}"
 
         message_placeholder.markdown(ai_text)
+        
         st.session_state.messages.append({"role": "assistant", "content": ai_text})
