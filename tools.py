@@ -10,8 +10,8 @@ search_tool = Tool(
     description = "Search the web fro information",
 )
 
-filename = input("Please provide the name of your file to be saved as: ")
-def save_to_txt(data: str, filename: str = filename + ".txt"):
+# filename = input("Please provide the name of your file to be saved as: ")
+def save_to_txt(data: str, filename: str = "demo.txt"):
     timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
     formatted_text = f"--- Research Output ---\nTimestamp: {timestamp}\n\n{data}\n\n"
 
